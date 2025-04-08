@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::Solvable;
 
 
@@ -36,7 +38,17 @@ impl Solvable for Solution  {
                             .zip(right.iter())
                             .map(|(&l,&r)| (l - r).abs())
                             .sum();
-        (dist, dist)
+        // make a hashmap from the right list
+        let mut right_freq: HashMap<i32, i32> = HashMap::new();
+        for r in right {
+             right_freq.entry(r).and_modify(|freq| *freq += 1).or_insert(1);
+        }
+
+        let similarity_score = left.into_iter()
+                                        .map(|l| *right_freq.get(&l).unwrap_or(&0) * l)
+                                        .sum();
+
+        (dist, similarity_score)
     }
 }
 
